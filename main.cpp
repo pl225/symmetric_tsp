@@ -28,13 +28,10 @@ void atualizarArestasMenores(
     double *cJ,
     double cV
 ) {
-    if (cV < *cI) {
-        *cJ = cV;
-        *j = v;
+    *cJ = cV;
+    *j = v;
+    if (cV < *cI) {   
         ordenarArestasMenores(i, j, cI, cJ);
-    } else {
-        *cJ = cV;
-        *j = v;
     }
 }
 
