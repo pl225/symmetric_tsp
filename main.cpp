@@ -54,6 +54,16 @@ std::vector<double> removerVerticeUm (const Graph &grafo, std::vector<double> &c
     return custoSemUm;
 }
 
+void atualizarMultiplicadoresLagrangeanos(
+    std::vector<double> &u,
+    double T,
+    std::vector<double> &G
+) {
+    for (int i = 0; i < u.size(); i++) {
+        u[i] = max(0.0, u[i] + T * G[i]);
+    }
+}
+
 double calcularSubgradiente(
     std::vector<double> &G, 
     const Graph &grafoSemUm, 
@@ -148,6 +158,10 @@ void relaxacaoLagrangeana (const Graph &grafo, std::vector<int> custo) {
         Z_LB = custoMst + arestasNoUm.cI + arestasNoUm.cJ;
 
         double gQuadrado = calcularSubgradiente(G, grafoSemUm, mst, arestasNoUm);
+
+        double T = (pi * (Z_UB - Z_LB)) / gQuadrado;
+
+        atualizarMultiplicadoresLagrangeanos(u, T, G);
 
         break;
     }
