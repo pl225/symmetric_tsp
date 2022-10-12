@@ -62,8 +62,10 @@ void atualizarCustosLagrangeanos(
 ) {
     for (int i = 0; i < grafoSemUm.GetNumVertices(); i++) {
         for (int j: grafoSemUm.AdjList(i)) {
-            int index = grafoSemUm.GetEdgeIndex(i, j);
-            custosLagrangeanos[index] = custosSemUm[index] - u[i];
+            if (i < j) {
+                int index = grafoSemUm.GetEdgeIndex(i, j);
+                custosLagrangeanos[index] = custosSemUm[index] - u[i] - u[j];
+            }
         }
     }
 }
@@ -99,6 +101,14 @@ double calcularSubgradiente(
         gQuadrado += (d * d);
     }
     return gQuadrado;
+}
+
+double somaMultiplicadores(const std::vector<double> &u) {
+    double cU = 0;
+    for (double d: u) {
+        cU += d;
+    }
+    return cU * 2;
 }
 
 SL resolverSubproblemaLagrangeano(
@@ -166,7 +176,8 @@ void relaxacaoLagrangeana (const Graph &grafo, std::vector<int> custo) {
         double custoMst = solucao.first.second;
         ArestasNoUm arestasNoUm = solucao.second;
 
-        Z_LB = custoMst + arestasNoUm.cI + arestasNoUm.cJ;
+        double cU = somaMultiplicadores(u);
+        Z_LB = custoMst + arestasNoUm.cI + arestasNoUm.cJ + cU;
 
         double gQuadrado = calcularSubgradiente(G, grafoSemUm, mst, arestasNoUm);
 
