@@ -38,6 +38,47 @@ void atualizarArestasMenores(
     }
 }
 
+std::vector<double> removerVerticeUm (const Graph &grafo, std::vector<double> &custo, Graph &grafoSemUm) {
+    int n = grafoSemUm.GetNumVertices();
+    std::vector<double> custoSemUm(n*(n-1)/2);
+
+    for (int i = 1; i < grafo.GetNumVertices(); i++) {
+        for (int j: grafo.AdjList(i)) {
+            if (j > 0) {
+                grafoSemUm.AddEdge(i - 1, j - 1);
+                custoSemUm[grafoSemUm.GetEdgeIndex(i - 1, j - 1)] = custo[grafo.GetEdgeIndex(i, j)];
+            }
+        }
+    }
+
+    return custoSemUm;
+}
+
+double calcularSubgradiente(
+    std::vector<double> &G, 
+    const Graph &grafoSemUm, 
+    std::list<int> &mst,
+    ArestasNoUm arestasNoUm
+) {
+    G.assign(G.size(), 2);
+    G[arestasNoUm.i]--;
+    G[arestasNoUm.j]--;
+    for(list<int>::iterator it = mst.begin(); it != mst.end(); it++) {
+        std::pair<int, int> p = grafoSemUm.GetEdge(*it);
+		int u = p.first, v = p.second;
+        G[u]--;
+        G[v]--;
+    }
+
+    double gQuadrado = 0;
+    int i = 0;
+    for (double d: G) {
+        gQuadrado += (d * d);
+        i++;
+    }
+    return gQuadrado;
+}
+
 SL resolverSubproblemaLagrangeano(
     Graph &grafoSemUm, 
     std::vector<double> &custoSemUm, 
@@ -84,22 +125,6 @@ SL resolverSubproblemaLagrangeano(
     return std::make_pair(p, no);
 }
 
-std::vector<double> removerVerticeUm (const Graph &grafo, std::vector<double> &custo, Graph &grafoSemUm) {
-    int n = grafoSemUm.GetNumVertices();
-    std::vector<double> custoSemUm(n*(n-1)/2);
-
-    for (int i = 1; i < grafo.GetNumVertices(); i++) {
-        for (int j: grafo.AdjList(i)) {
-            if (j > 0) {
-                grafoSemUm.AddEdge(i - 1, j - 1);
-                custoSemUm[grafoSemUm.GetEdgeIndex(i - 1, j - 1)] = custo[grafo.GetEdgeIndex(i, j)];
-            }
-        }
-    }
-
-    return custoSemUm;
-}
-
 void relaxacaoLagrangeana (const Graph &grafo, std::vector<int> custo) {
     std::vector<double> custoD;
     custoD.assign(custo.begin(), custo.end());
@@ -112,6 +137,7 @@ void relaxacaoLagrangeana (const Graph &grafo, std::vector<int> custo) {
     std::vector<double> custosSemUm = removerVerticeUm(grafo, custoD, grafoSemUm);
     std::vector<double> u(grafoSemUm.GetNumVertices(), 0);
     std::vector<double> custosLagrangeanos (custosSemUm.size(), 0);
+    std::vector<double> G (grafoSemUm.GetNumVertices(), 2);
 
     while (true) {
         SL solucao = resolverSubproblemaLagrangeano(grafoSemUm, custosSemUm, grafo, custoD, custosLagrangeanos);
@@ -121,13 +147,9 @@ void relaxacaoLagrangeana (const Graph &grafo, std::vector<int> custo) {
 
         Z_LB = custoMst + arestasNoUm.cI + arestasNoUm.cJ;
 
-        printf("%lf %d %d\n", Z_LB, arestasNoUm.i, arestasNoUm.j);
+        double gQuadrado = calcularSubgradiente(G, grafoSemUm, mst, arestasNoUm);
 
         break;
-    }
-
-    for (int j: grafo.AdjList(0)) {
-        printf("%d %lf\n", j, custoD[grafo.GetEdgeIndex(0, j)]);
     }
 
 }
