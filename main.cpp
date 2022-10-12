@@ -54,6 +54,20 @@ std::vector<double> removerVerticeUm (const Graph &grafo, std::vector<double> &c
     return custoSemUm;
 }
 
+void atualizarCustosLagrangeanos(
+    const Graph &grafoSemUm, 
+    std::vector<double> &custosSemUm, 
+    std::vector<double> &custosLagrangeanos, 
+    std::vector<double> &u
+) {
+    for (int i = 0; i < grafoSemUm.GetNumVertices(); i++) {
+        for (int j: grafoSemUm.AdjList(i)) {
+            int index = grafoSemUm.GetEdgeIndex(i, j);
+            custosLagrangeanos[index] = custosSemUm[index] - u[i] - u[j];
+        }
+    }
+}
+
 void atualizarMultiplicadoresLagrangeanos(
     std::vector<double> &u,
     double T,
@@ -91,12 +105,11 @@ double calcularSubgradiente(
 
 SL resolverSubproblemaLagrangeano(
     Graph &grafoSemUm, 
-    std::vector<double> &custoSemUm, 
     const Graph &grafo, 
     std::vector<double> &custo,
     std::vector<double> &custosLagrangeanos
 ) {
-    std::pair< list<int>, double > p = Prim(grafoSemUm, custoSemUm);
+    std::pair< list<int>, double > p = Prim(grafoSemUm, custosLagrangeanos);
 
     const int zero = 0;
     std::list<int> adjUm = grafo.AdjList(zero);
@@ -150,7 +163,7 @@ void relaxacaoLagrangeana (const Graph &grafo, std::vector<int> custo) {
     std::vector<double> G (grafoSemUm.GetNumVertices(), 2);
 
     while (true) {
-        SL solucao = resolverSubproblemaLagrangeano(grafoSemUm, custosSemUm, grafo, custoD, custosLagrangeanos);
+        SL solucao = resolverSubproblemaLagrangeano(grafoSemUm, grafo, custoD, custosLagrangeanos);
         std::list mst = solucao.first.first;
         double custoMst = solucao.first.second;
         ArestasNoUm arestasNoUm = solucao.second;
@@ -162,6 +175,8 @@ void relaxacaoLagrangeana (const Graph &grafo, std::vector<int> custo) {
         double T = (pi * (Z_UB - Z_LB)) / gQuadrado;
 
         atualizarMultiplicadoresLagrangeanos(u, T, G);
+
+        atualizarCustosLagrangeanos(grafoSemUm, custosSemUm, custosLagrangeanos, u);
 
         break;
     }
