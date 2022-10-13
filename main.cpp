@@ -112,19 +112,19 @@ double somaMultiplicadores(const std::vector<double> &u) {
     return cU * 2;
 }
 
-int atualizarMelhoresValores(double Z_LB, double *Z_UB, double *Z_LB_MAX, double *pi, int iterSemMelhora) {
+bool atualizarMelhoresValores(double Z_LB, double *Z_UB, double *Z_LB_MAX, double *pi, int *iterSemMelhora) {
     if (Z_LB > *Z_LB_MAX) {
         *Z_LB_MAX = Z_LB;
-        // tentar melhorar o limite superior aqui
-        iterSemMelhora = 0;
+        *iterSemMelhora = 0;
+        return true;
     } else {
-        iterSemMelhora++;
-        if (iterSemMelhora == IT_MAX_PI) {
+        *iterSemMelhora++;
+        if (*iterSemMelhora == IT_MAX_PI) {
             *pi /= 2;
-            iterSemMelhora = 0;
+            *iterSemMelhora = 0;
         }
     }
-    return iterSemMelhora;
+    return false;
 }
 
 bool deveContinuar(double Z_LB, double Z_UB, double pi, int iter) {
@@ -202,7 +202,7 @@ void relaxacaoLagrangeana (const Graph &grafo, std::vector<int> custo) {
         double cU = somaMultiplicadores(u);
         Z_LB = custoMst + arestasNoUm.cI + arestasNoUm.cJ + cU;
 
-        iterSemMelhora = atualizarMelhoresValores(Z_LB, &Z_UB, &Z_LB_MAX, &pi, iterSemMelhora);
+        bool deveMelhorarUb = atualizarMelhoresValores(Z_LB, &Z_UB, &Z_LB_MAX, &pi, &iterSemMelhora);
 
         double gQuadrado = calcularSubgradiente(G, grafoSemUm, mst, arestasNoUm);
 
