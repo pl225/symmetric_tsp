@@ -127,6 +127,41 @@ bool atualizarMelhoresValores(double Z_LB, double *Z_UB, double *Z_LB_MAX, doubl
     return false;
 }
 
+void melhorarUbCustoComplementar(
+    const Graph &grafo, 
+    const std::vector<double> & custoD, 
+    const Graph &grafoSemUm, 
+    SL &solucao, 
+    double *Z_UB
+) {
+    std::vector<double> custosComplementares(custoD);
+    std::vector<int> indicesComplementares;
+    list<int> mst = solucao.first.first;
+    ArestasNoUm arestaNoUm = solucao.second;
+    int indexArestaGrafo;
+    for (int e: mst) {
+        std::pair<int, int> edge = grafoSemUm.GetEdge(e);
+        indexArestaGrafo = grafo.GetEdgeIndex(edge.first + 1, edge.second + 1);
+        custosComplementares[indexArestaGrafo] = 0;
+        indicesComplementares.push_back(indexArestaGrafo);
+    }
+
+    indexArestaGrafo = grafo.GetEdgeIndex(0, arestaNoUm.i + 1);
+    custosComplementares[indexArestaGrafo] = 0;
+    indicesComplementares.push_back(indexArestaGrafo);
+    indexArestaGrafo = grafo.GetEdgeIndex(0, arestaNoUm.j + 1);
+    custosComplementares[indexArestaGrafo] = 0;
+    indicesComplementares.push_back(indexArestaGrafo);
+
+    double Z_UB_Complementar = Christofides(grafo, custosComplementares).second;
+    for (int l: indicesComplementares) {
+        Z_UB_Complementar += custoD[l];
+    }
+    if (Z_UB_Complementar < *Z_UB) {
+        *Z_UB = Z_UB_Complementar;
+    }
+}
+
 bool deveContinuar(double Z_LB, double Z_UB, double pi, int iter) {
 	return (Z_UB - Z_LB) > 1 && iter < IT_MAX && pi >= MENOR_PI;
 }
@@ -202,8 +237,6 @@ void relaxacaoLagrangeana (const Graph &grafo, std::vector<int> custo) {
         double cU = somaMultiplicadores(u);
         Z_LB = custoMst + arestasNoUm.cI + arestasNoUm.cJ + cU;
 
-        bool deveMelhorarUb = atualizarMelhoresValores(Z_LB, &Z_UB, &Z_LB_MAX, &pi, &iterSemMelhora);
-
         double gQuadrado = calcularSubgradiente(G, grafoSemUm, mst, arestasNoUm);
 
         double T = (pi * (1.01*Z_UB - Z_LB)) / gQuadrado;
@@ -212,11 +245,17 @@ void relaxacaoLagrangeana (const Graph &grafo, std::vector<int> custo) {
 
         atualizarCustosLagrangeanos(grafoSemUm, custosSemUm, custosLagrangeanos, u);
 
+        bool deveMelhorarUb = atualizarMelhoresValores(Z_LB, &Z_UB, &Z_LB_MAX, &pi, &iterSemMelhora);
+        if (deveMelhorarUb) {
+            melhorarUbCustoComplementar(grafo, custoD, grafoSemUm, solucao, &Z_UB);
+        }
+
         iter++;
 
         printf("%lf\n", Z_LB);
     }
-
+    
+    printf("%lf %lf %lf\n", Z_LB_MAX, Z_LB, Z_UB);
 }
 
 int main(int argc, char const *argv[]) {
