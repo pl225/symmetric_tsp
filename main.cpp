@@ -4,6 +4,10 @@
 #include "arestas_no_um.h"
 #include <iostream>
 
+#define IT_MAX_PI 40
+#define MENOR_PI 0.005
+#define IT_MAX 2000
+
 typedef std::pair<std::pair<std::list<int>, double>, ArestasNoUm> SL;
 
 void ordenarArestasMenores(
@@ -108,6 +112,25 @@ double somaMultiplicadores(const std::vector<double> &u) {
     return cU * 2;
 }
 
+int atualizarMelhoresValores(double Z_LB, double *Z_UB, double *Z_LB_MAX, double *pi, int iterSemMelhora) {
+    if (Z_LB > *Z_LB_MAX) {
+        *Z_LB_MAX = Z_LB;
+        // tentar melhorar o limite superior aqui
+        iterSemMelhora = 0;
+    } else {
+        iterSemMelhora++;
+        if (iterSemMelhora == IT_MAX_PI) {
+            *pi /= 2;
+            iterSemMelhora = 0;
+        }
+    }
+    return iterSemMelhora;
+}
+
+bool deveContinuar(double Z_LB, double Z_UB, double pi, int iter) {
+	return (Z_UB - Z_LB) > 1 && iter < IT_MAX && pi >= MENOR_PI;
+}
+
 SL resolverSubproblemaLagrangeano(
     const Graph &grafoSemUm, 
     const Graph &grafo, 
@@ -158,9 +181,11 @@ void relaxacaoLagrangeana (const Graph &grafo, std::vector<int> custo) {
     std::vector<double> custoD;
     custoD.assign(custo.begin(), custo.end());
     
-    double Z_UB = 1610; //Christofides(grafo, custoD).second;
-    double Z_LB = 0;
-    double pi = 2;
+    double Z_UB = Christofides(grafo, custoD).second,
+        Z_LB = 0,
+        Z_LB_MAX = 0,
+        pi = 2;
+    int iterSemMelhora = 0, iter = 0;
 
     Graph grafoSemUm(grafo.GetNumVertices() - 1);
     std::vector<double> custosSemUm = removerVerticeUm(grafo, custoD, grafoSemUm);
@@ -168,7 +193,7 @@ void relaxacaoLagrangeana (const Graph &grafo, std::vector<int> custo) {
     std::vector<double> custosLagrangeanos (custosSemUm.size(), 0);
     std::vector<double> G (grafoSemUm.GetNumVertices(), 2);
 
-    while (Z_UB - Z_LB > 1) {
+    while (deveContinuar(Z_LB, Z_UB, pi, iter)) {
         SL solucao = resolverSubproblemaLagrangeano(grafoSemUm, grafo, custoD, custosLagrangeanos, u);
         std::list mst = solucao.first.first;
         double custoMst = solucao.first.second;
@@ -177,13 +202,17 @@ void relaxacaoLagrangeana (const Graph &grafo, std::vector<int> custo) {
         double cU = somaMultiplicadores(u);
         Z_LB = custoMst + arestasNoUm.cI + arestasNoUm.cJ + cU;
 
+        iterSemMelhora = atualizarMelhoresValores(Z_LB, &Z_UB, &Z_LB_MAX, &pi, iterSemMelhora);
+
         double gQuadrado = calcularSubgradiente(G, grafoSemUm, mst, arestasNoUm);
 
-        double T = (pi * (Z_UB - Z_LB)) / gQuadrado;
+        double T = (pi * (1.01*Z_UB - Z_LB)) / gQuadrado;
 
         atualizarMultiplicadoresLagrangeanos(u, T, G);
 
         atualizarCustosLagrangeanos(grafoSemUm, custosSemUm, custosLagrangeanos, u);
+
+        iter++;
 
         printf("%lf\n", Z_LB);
     }
