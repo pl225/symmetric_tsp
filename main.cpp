@@ -3,6 +3,7 @@
 #include "christofides/Christofides.h"
 #include "arestas_no_um.h"
 #include <iostream>
+#include <chrono>
 
 #define IT_MAX_PI 40
 #define MENOR_PI 0.005
@@ -222,6 +223,8 @@ void relaxacaoLagrangeana (const Graph &grafo, std::vector<int> custo) {
         pi = 2;
     int iterSemMelhora = 0, iter = 0;
 
+    printf("%lf, ", Z_UB);
+
     Graph grafoSemUm(grafo.GetNumVertices() - 1);
     std::vector<double> custosSemUm = removerVerticeUm(grafo, custoD, grafoSemUm);
     std::vector<double> u(grafoSemUm.GetNumVertices(), 0);
@@ -252,10 +255,10 @@ void relaxacaoLagrangeana (const Graph &grafo, std::vector<int> custo) {
 
         iter++;
 
-        printf("%lf\n", Z_LB);
+        //printf("%lf\n", Z_LB);
     }
     
-    printf("%lf %lf %lf\n", Z_LB_MAX, Z_LB, Z_UB);
+    printf("%lf, %lf, %lf", Z_LB_MAX, Z_LB, Z_UB);
 }
 
 int main(int argc, char const *argv[]) {
@@ -265,10 +268,17 @@ int main(int argc, char const *argv[]) {
 
     string arquivo(argv[1]);
 
+    std::cout << arquivo.substr(11) << ", ";
+    
     TSPLIB_parser parser(arquivo);
     Graph g = parser.GetGraph();
 
+    std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+    
     relaxacaoLagrangeana(g, parser.GetCosts());
+    
+    std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+    std::cout << ", " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
 
     return 0;
 }
