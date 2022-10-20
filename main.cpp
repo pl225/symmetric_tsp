@@ -233,7 +233,7 @@ void relaxacaoLagrangeana (const Graph &grafo, std::vector<int> custo) {
 
     while (deveContinuar(Z_LB, Z_UB, pi, iter)) {
         SL solucao = resolverSubproblemaLagrangeano(grafoSemUm, grafo, custoD, custosLagrangeanos, u);
-        std::list mst = solucao.first.first;
+        std::list<int> mst = solucao.first.first;
         double custoMst = solucao.first.second;
         ArestasNoUm arestasNoUm = solucao.second;
 
