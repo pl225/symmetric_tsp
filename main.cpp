@@ -113,7 +113,7 @@ double somaMultiplicadores(const std::vector<double> &u) {
     return cU * 2;
 }
 
-bool atualizarMelhoresValores(double Z_LB, double *Z_UB, double *Z_LB_MAX, double *pi, int *iterSemMelhora) {
+bool atualizarMelhoresValores(double Z_LB, double *Z_LB_MAX, double *pi, int *iterSemMelhora) {
     if (Z_LB > *Z_LB_MAX) {
         *Z_LB_MAX = Z_LB;
         *iterSemMelhora = 0;
@@ -136,7 +136,6 @@ void melhorarUbCustoComplementar(
     double *Z_UB
 ) {
     std::vector<double> custosComplementares(custoD);
-    std::vector<int> indicesComplementares;
     list<int> mst = solucao.first.first;
     ArestasNoUm arestaNoUm = solucao.second;
     int indexArestaGrafo;
@@ -144,22 +143,20 @@ void melhorarUbCustoComplementar(
         std::pair<int, int> edge = grafoSemUm.GetEdge(e);
         indexArestaGrafo = grafo.GetEdgeIndex(edge.first + 1, edge.second + 1);
         custosComplementares[indexArestaGrafo] = 0;
-        indicesComplementares.push_back(indexArestaGrafo);
     }
 
     indexArestaGrafo = grafo.GetEdgeIndex(0, arestaNoUm.i + 1);
     custosComplementares[indexArestaGrafo] = 0;
-    indicesComplementares.push_back(indexArestaGrafo);
     indexArestaGrafo = grafo.GetEdgeIndex(0, arestaNoUm.j + 1);
     custosComplementares[indexArestaGrafo] = 0;
-    indicesComplementares.push_back(indexArestaGrafo);
 
-    double Z_UB_Complementar = Christofides(grafo, custosComplementares).second;
-    for (int l: indicesComplementares) {
-        Z_UB_Complementar += custoD[l];
+    std::pair<std::vector<int>, double> sol = Christofides(grafo, custosComplementares);
+    double Z_UB_Novo = 0;
+    for (int l: sol.first) {
+        Z_UB_Novo += custoD[l];
     }
-    if (Z_UB_Complementar < *Z_UB) {
-        *Z_UB = Z_UB_Complementar;
+    if (Z_UB_Novo < *Z_UB) {
+        *Z_UB = Z_UB_Novo;
     }
 }
 
@@ -248,7 +245,7 @@ void relaxacaoLagrangeana (const Graph &grafo, std::vector<int> custo) {
 
         atualizarCustosLagrangeanos(grafoSemUm, custosSemUm, custosLagrangeanos, u);
 
-        bool deveMelhorarUb = atualizarMelhoresValores(Z_LB, &Z_UB, &Z_LB_MAX, &pi, &iterSemMelhora);
+        bool deveMelhorarUb = atualizarMelhoresValores(Z_LB, &Z_LB_MAX, &pi, &iterSemMelhora);
         if (deveMelhorarUb) {
             melhorarUbCustoComplementar(grafo, custoD, grafoSemUm, solucao, &Z_UB);
         }
