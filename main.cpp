@@ -160,8 +160,8 @@ void melhorarUbCustoComplementar(
     }
 }
 
-bool deveContinuar(double Z_LB, double Z_UB, double pi, int iter) {
-	return (Z_UB - Z_LB) > 1 && iter < IT_MAX && pi >= MENOR_PI;
+bool deveContinuar(double Z_LB, double Z_UB, double pi, int iter, double gQuadrado) {
+	return (Z_UB - Z_LB) > 1 && iter < IT_MAX && pi >= MENOR_PI && gQuadrado != 0;
 }
 
 SL resolverSubproblemaLagrangeano(
@@ -217,7 +217,8 @@ void relaxacaoLagrangeana (const Graph &grafo, std::vector<int> custo) {
     double Z_UB = Christofides(grafo, custoD).second,
         Z_LB = 0,
         Z_LB_MAX = 0,
-        pi = 2;
+        pi = 2,
+        gQuadrado = -1;
     int iterSemMelhora = 0, iter = 0;
 
     printf("%lf, ", Z_UB);
@@ -225,10 +226,10 @@ void relaxacaoLagrangeana (const Graph &grafo, std::vector<int> custo) {
     Graph grafoSemUm(grafo.GetNumVertices() - 1);
     std::vector<double> custosSemUm = removerVerticeUm(grafo, custoD, grafoSemUm);
     std::vector<double> u(grafoSemUm.GetNumVertices(), 0);
-    std::vector<double> custosLagrangeanos (custosSemUm.size(), 0);
+    std::vector<double> custosLagrangeanos (custosSemUm);
     std::vector<double> G (grafoSemUm.GetNumVertices(), 2);
 
-    while (deveContinuar(Z_LB, Z_UB, pi, iter)) {
+    while (deveContinuar(Z_LB, Z_UB, pi, iter, gQuadrado)) {
         SL solucao = resolverSubproblemaLagrangeano(grafoSemUm, grafo, custoD, custosLagrangeanos, u);
         std::list<int> mst = solucao.first.first;
         double custoMst = solucao.first.second;
@@ -237,7 +238,7 @@ void relaxacaoLagrangeana (const Graph &grafo, std::vector<int> custo) {
         double cU = somaMultiplicadores(u);
         Z_LB = custoMst + arestasNoUm.cI + arestasNoUm.cJ + cU;
 
-        double gQuadrado = calcularSubgradiente(G, grafoSemUm, mst, arestasNoUm);
+        gQuadrado = calcularSubgradiente(G, grafoSemUm, mst, arestasNoUm);
 
         double T = (pi * (1.01*Z_UB - Z_LB)) / gQuadrado;
 
