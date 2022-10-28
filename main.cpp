@@ -5,8 +5,8 @@
 #include <iostream>
 #include <chrono>
 
-#define IT_MAX_PI 40
-#define MENOR_PI 0.005
+#define IT_MAX_PI 100
+#define MENOR_PI 0.0005
 #define IT_MAX 2000
 
 typedef std::pair<std::pair<std::list<int>, double>, ArestasNoUm> SL;
@@ -119,9 +119,9 @@ bool atualizarMelhoresValores(double Z_LB, double *Z_LB_MAX, double *pi, int *it
         *iterSemMelhora = 0;
         return true;
     } else {
-        *iterSemMelhora++;
+        *iterSemMelhora = *iterSemMelhora + 1;
         if (*iterSemMelhora == IT_MAX_PI) {
-            *pi /= 2;
+            *pi = *pi / 2;
             *iterSemMelhora = 0;
         }
     }
@@ -253,7 +253,7 @@ void relaxacaoLagrangeana (const Graph &grafo, std::vector<int> custo) {
 
         iter++;
 
-        //printf("%lf\n", Z_LB);
+        //printf("Z_LB=%lf, Z_LB_MAX=%lf, Z_UB=%lf, T=%lf, PI=%lf, iter=%d\n", Z_LB, Z_LB_MAX, Z_UB, T, pi, iter);
     }
     
     printf("%lf, %lf, %lf", Z_LB_MAX, Z_LB, Z_UB);
