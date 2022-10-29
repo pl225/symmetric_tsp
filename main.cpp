@@ -14,6 +14,7 @@ void relaxacaoLagrangeana (Graph &grafo, std::vector<int> custo) {
         pi = 2,
         gQuadrado = -1;
     int iterSemMelhora = 0, iter = 0;
+    ArestasNoUm fixadasUm = { -1, -1, -1, -1 };
 
     printf("%lf, ", Z_UB);
 
@@ -43,7 +44,7 @@ void relaxacaoLagrangeana (Graph &grafo, std::vector<int> custo) {
         bool deveMelhorarUb = atualizarMelhoresValores(Z_LB, &Z_LB_MAX, &pi, &iterSemMelhora);
         if (deveMelhorarUb) {
             melhorarUbCustoComplementar(grafo, custoD, grafoSemUm, solucao, &Z_UB);
-            fixarVariaveis(Z_LB, Z_UB, grafo, grafoSemUm, custoD, u, arestasNoUm);
+            fixarVariaveis(Z_LB, Z_UB, grafo, custoD, u, arestasNoUm, &fixadasUm);
         }
 
         iter++;
