@@ -10,5 +10,8 @@ main.cpp:
 lagrangeano_principal.cpp:
 	g++ $(FLAG) -c lagrangeano_principal.cpp -o lagrangeano_principal.o
 
-build: main.o lagrangeano_principal.o
-	g++ $(FLAG) main.o lagrangeano_principal.o $(OBJ) -o exe
+fixar_variaveis.cpp:
+	g++ $(FLAG) -c fixar_variaveis.cpp -o fixar_variaveis.o
+
+build: main.o lagrangeano_principal.o fixar_variaveis.o
+	g++ $(FLAG) main.o lagrangeano_principal.o fixar_variaveis.o $(OBJ) -o exe

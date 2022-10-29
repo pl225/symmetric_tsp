@@ -1,9 +1,10 @@
 #include "lagrangeano_principal.h"
 #include "christofides/TSPLIB_parser.h"
+#include "fixar_variaveis.h"
 #include <iostream>
 #include <chrono>
 
-void relaxacaoLagrangeana (const Graph &grafo, std::vector<int> custo) {
+void relaxacaoLagrangeana (Graph &grafo, std::vector<int> custo) {
     std::vector<double> custoD;
     custoD.assign(custo.begin(), custo.end());
     
@@ -42,6 +43,7 @@ void relaxacaoLagrangeana (const Graph &grafo, std::vector<int> custo) {
         bool deveMelhorarUb = atualizarMelhoresValores(Z_LB, &Z_LB_MAX, &pi, &iterSemMelhora);
         if (deveMelhorarUb) {
             melhorarUbCustoComplementar(grafo, custoD, grafoSemUm, solucao, &Z_UB);
+            fixarVariaveis(Z_LB, Z_UB, grafo, grafoSemUm, custoD, u, arestasNoUm);
         }
 
         iter++;
