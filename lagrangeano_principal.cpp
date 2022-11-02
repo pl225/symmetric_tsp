@@ -158,7 +158,8 @@ SL resolverSubproblemaLagrangeano(
     const Graph &grafo, 
     const std::vector<double> &custo,
     const std::vector<double> &custosLagrangeanos,
-    const std::vector<double> &u
+    const std::vector<double> &u,
+    ArestasNoUm *fixadasUm
 ) {
     std::pair< list<int>, double > p = Prim(grafoSemUm, custosLagrangeanos);
 
@@ -167,13 +168,28 @@ SL resolverSubproblemaLagrangeano(
     list<int>::iterator it = adjUm.begin();
 
     int i = *it;
-    it++;
+    if (fixadasUm->i != -1) {
+        i = fixadasUm->i + 1;
+    } else {
+        it++;
+    }
+    
     int j = *it;
-    it++;
+    if (fixadasUm->j != -1) {
+        j = fixadasUm->j + 1;
+    } else {
+        it++;
+    }
+
     double cI = custo[grafo.GetEdgeIndex(zero, i)] - u[i - 1], 
         cJ = custo[grafo.GetEdgeIndex(zero, j)] - u[j - 1];
     i--;
     j--;
+
+    if (fixadasUm->i != -1 && fixadasUm->j != -1) {
+        ArestasNoUm no = { i, j, cI, cJ };
+        return std::make_pair(p, no);
+    }
 
     if (cI > cJ) {
         ordenarArestasMenores(&i, &j, &cI, &cJ);
@@ -195,6 +211,6 @@ SL resolverSubproblemaLagrangeano(
     }
 
     ArestasNoUm no = { i, j, cI, cJ };
-
+    
     return std::make_pair(p, no);
 }

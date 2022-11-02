@@ -55,7 +55,8 @@ SL resolverSubproblemaLagrangeano(
     const Graph &grafo, 
     const std::vector<double> &custo,
     const std::vector<double> &custosLagrangeanos,
-    const std::vector<double> &u
+    const std::vector<double> &u,
+    ArestasNoUm *fixadasUm
 );
 
 #endif

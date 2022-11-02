@@ -25,7 +25,7 @@ void relaxacaoLagrangeana (Graph &grafo, std::vector<int> custo) {
     std::vector<double> G (grafoSemUm.GetNumVertices(), 2);
 
     while (deveContinuar(Z_LB, Z_UB, pi, iter, gQuadrado)) {
-        SL solucao = resolverSubproblemaLagrangeano(grafoSemUm, grafo, custoD, custosLagrangeanos, u);
+        SL solucao = resolverSubproblemaLagrangeano(grafoSemUm, grafo, custoD, custosLagrangeanos, u, &fixadasUm);
         std::list<int> mst = solucao.first.first;
         double custoMst = solucao.first.second;
         ArestasNoUm arestasNoUm = solucao.second;
