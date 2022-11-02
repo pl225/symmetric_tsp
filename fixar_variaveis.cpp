@@ -97,7 +97,7 @@ std::vector<ArestaCusto> construirArvore(
     Graph &grafoSemUm,
     const std::vector<double> &custosL,
     std::list<int> &mst,
-    std::unordered_map<int, std::unordered_map<int, bool>> &mapaArestas
+    std::vector<std::vector<bool>> &mapaArestas
 ) {
     std::vector<ArestaCusto> arestasOrdenadas;
     for(list<int>::iterator it = mst.begin(); it != mst.end(); it++) {
@@ -106,11 +106,8 @@ std::vector<ArestaCusto> construirArvore(
         
         arestasOrdenadas.push_back(std::make_pair(custosL[*it], std::make_pair(u, v)));
 
-		mapaArestas.insert(std::make_pair(u, std::unordered_map<int, bool>()));
-        mapaArestas.insert(std::make_pair(v, std::unordered_map<int, bool>()));
-
-        mapaArestas[u].insert(std::make_pair(v, true));
-        mapaArestas[v].insert(std::make_pair(u, true));
+        mapaArestas[u][v] = true;
+        mapaArestas[v][u] = true;
 	}
 
     sort(arestasOrdenadas.begin(), arestasOrdenadas.end());
@@ -126,11 +123,57 @@ void fixarVariaveisOutrosVertices(
     std::list<int> &mst
 ) {
     std::vector componentes(grafoSemUm.GetNumVertices(), 0);
-    std::unordered_map<int, std::unordered_map<int, bool>> mapaArestas;
+    std::vector<std::vector<bool>> mapaArestas (grafoSemUm.GetNumVertices(), std::vector<bool>(grafoSemUm.GetNumVertices(), false));
 
     std::vector<ArestaCusto> arestasOrdenadas = construirArvore(grafoSemUm, custosL, mst, mapaArestas);
+    int nComponentes = 0;
 
     while (!arestasOrdenadas.empty()) {
+        ArestaCusto e = arestasOrdenadas.back();
+        int u = e.second.first, w = e.second.second;
+        arestasOrdenadas.pop_back();
+        mapaArestas[w][u] = false;
+        mapaArestas[u][w] = false;
+        std::queue<int> fila;
+        std::vector<bool> visitados (grafoSemUm.GetNumVertices(), false);
+        std::vector<int> componenteU, componenteW;
+        
+        fila.push(u);
+        visitados[u] = true;
+        componenteU.push_back(u);
+        componenteW.push_back(w);
+        nComponentes++;
 
+        while (!fila.empty()) {
+            int v = fila.back();
+            fila.pop();
+
+            for (int a: grafoSemUm.AdjList(v)) {
+                if (!visitados[a] && mapaArestas[v][a]) {
+                    fila.push(a);
+                    visitados[a] = true;
+                    componentes[a] = nComponentes;
+                    componenteU.push_back(a);
+                }
+            }
+        }
+        componentes[u] = nComponentes;
+
+        nComponentes++;
+        for (int i = 0; i < grafoSemUm.GetNumVertices(); i++) {
+            if (i != w && componentes[i] == componentes[w]) {
+                componenteW.push_back(i);
+                componentes[i] = nComponentes;
+            }
+        }
+        componentes[w] = nComponentes;
+
+        for (int i = 0; i < grafoSemUm.GetNumVertices(); i++) {
+            for (int j = i + 1; j < grafoSemUm.GetNumVertices(); j++) {
+                if (mapaArestas[i][j]) {
+                    printf("%d %d\n", i, j);
+                }
+            }
+        }
     }
 }

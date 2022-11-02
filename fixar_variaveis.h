@@ -5,6 +5,7 @@
 #include "arestas_no_um.h"
 #include <unordered_map>
 #include <bits/stdc++.h>
+#include <queue>
 #include <iostream>
 #include <limits>
 
