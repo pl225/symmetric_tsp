@@ -44,7 +44,8 @@ void relaxacaoLagrangeana (Graph &grafo, std::vector<int> custo) {
         bool deveMelhorarUb = atualizarMelhoresValores(Z_LB, &Z_LB_MAX, &pi, &iterSemMelhora);
         if (deveMelhorarUb) {
             melhorarUbCustoComplementar(grafo, custoD, grafoSemUm, solucao, &Z_UB);
-            fixarVariaveis(Z_LB, Z_UB, grafo, custoD, u, arestasNoUm, &fixadasUm);
+            fixarVariaveisVerticeUm(Z_LB, Z_UB, grafo, custoD, u, arestasNoUm, &fixadasUm);
+            fixarVariaveisOutrosVertices(Z_LB, Z_UB, grafo, grafoSemUm, custosLagrangeanos, mst);
         }
 
         iter++;

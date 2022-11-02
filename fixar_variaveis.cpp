@@ -80,7 +80,7 @@ void fixarVarsUmVerticeUm (
     }
 }
 
-void fixarVariaveis (
+void fixarVariaveisVerticeUm (
     double Z_LB, 
     double Z_UB, 
     Graph &grafo, 
@@ -91,4 +91,46 @@ void fixarVariaveis (
 ) { 
     fixarVarsUmVerticeZero(Z_LB, Z_UB, grafo, custosD, u, arestas);
     fixarVarsUmVerticeUm(Z_LB, Z_UB, grafo, custosD, u, arestas, fixadasUm);
+}
+
+std::vector<ArestaCusto> construirArvore(
+    Graph &grafoSemUm,
+    const std::vector<double> &custosL,
+    std::list<int> &mst,
+    std::unordered_map<int, std::unordered_map<int, bool>> &mapaArestas
+) {
+    std::vector<ArestaCusto> arestasOrdenadas;
+    for(list<int>::iterator it = mst.begin(); it != mst.end(); it++) {
+		pair<int, int> p = grafoSemUm.GetEdge(*it);
+		int u = p.first, v = p.second;
+        
+        arestasOrdenadas.push_back(std::make_pair(custosL[*it], std::make_pair(u, v)));
+
+		mapaArestas.insert(std::make_pair(u, std::unordered_map<int, bool>()));
+        mapaArestas.insert(std::make_pair(v, std::unordered_map<int, bool>()));
+
+        mapaArestas[u].insert(std::make_pair(v, true));
+        mapaArestas[v].insert(std::make_pair(u, true));
+	}
+
+    sort(arestasOrdenadas.begin(), arestasOrdenadas.end());
+    return arestasOrdenadas;
+}
+
+void fixarVariaveisOutrosVertices(
+    double Z_LB, 
+    double Z_UB,
+    Graph &grafo,
+    Graph &grafoSemUm,
+    const std::vector<double> &custosL,
+    std::list<int> &mst
+) {
+    std::vector componentes(grafoSemUm.GetNumVertices(), 0);
+    std::unordered_map<int, std::unordered_map<int, bool>> mapaArestas;
+
+    std::vector<ArestaCusto> arestasOrdenadas = construirArvore(grafoSemUm, custosL, mst, mapaArestas);
+
+    while (!arestasOrdenadas.empty()) {
+
+    }
 }
