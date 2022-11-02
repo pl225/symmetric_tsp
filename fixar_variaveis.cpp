@@ -168,11 +168,22 @@ void fixarVariaveisOutrosVertices(
         }
         componentes[w] = nComponentes;
 
-        for (int i = 0; i < grafoSemUm.GetNumVertices(); i++) {
-            for (int j = i + 1; j < grafoSemUm.GetNumVertices(); j++) {
-                if (mapaArestas[i][j]) {
-                    printf("%d %d\n", i, j);
+        for (int i: componenteU) {
+            list<int>::iterator it = grafoSemUm.AdjListWithoutConst(i).begin();
+
+            while (it != grafoSemUm.AdjListWithoutConst(i).end()) {
+                int j = *it;
+                if (componentes[j] == componentes[w]) {
+                    int index = grafoSemUm.GetEdgeIndex(i, j);
+                    double novoCusto = Z_LB - e.first + custosL[index];
+
+                    if (novoCusto > Z_UB) {
+                        it = grafoSemUm.removeEdge(i, j);
+                        mapaArestas[i][j] = mapaArestas[j][i] = false;
+                        continue;
+                    }
                 }
+                it++;
             }
         }
     }
