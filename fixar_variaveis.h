@@ -4,6 +4,7 @@
 #include "christofides/Matching/Graph.h"
 #include "arestas_no_um.h"
 #include <unordered_map>
+#include <set>
 #include <bits/stdc++.h>
 #include <queue>
 #include <iostream>
@@ -27,7 +28,8 @@ void fixarVariaveisOutrosVertices(
     Graph &grafo,
     Graph &grafoSemUm,
     const std::vector<double> &custosL,
-    std::list<int> &mst
+    std::list<int> &mst,
+    std::unordered_map<int, std::set<int>> &arestasFixadasUm
 );
 
 #endif

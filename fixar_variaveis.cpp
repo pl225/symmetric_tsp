@@ -120,7 +120,8 @@ void fixarVariaveisOutrosVertices(
     Graph &grafo,
     Graph &grafoSemUm,
     const std::vector<double> &custosL,
-    std::list<int> &mst
+    std::list<int> &mst,
+    std::unordered_map<int, std::set<int>> &arestasFixadasUm
 ) {
     std::vector componentes(grafoSemUm.GetNumVertices(), 0);
     std::vector<std::vector<bool>> mapaArestas (grafoSemUm.GetNumVertices(), std::vector<bool>(grafoSemUm.GetNumVertices(), false));
@@ -168,14 +169,21 @@ void fixarVariaveisOutrosVertices(
         }
         componentes[w] = nComponentes;
 
+        double minCost = std::numeric_limits<double>::max();
+        int y = -1, z = -1;
         for (int i: componenteU) {
             list<int>::iterator it = grafoSemUm.AdjListWithoutConst(i).begin();
 
             while (it != grafoSemUm.AdjListWithoutConst(i).end()) {
                 int j = *it;
-                if (componentes[j] == componentes[w]) {
+                if ((i != e.second.first || j != e.second.second) && componentes[j] == componentes[w]) {
                     int index = grafoSemUm.GetEdgeIndex(i, j);
                     double novoCusto = Z_LB - e.first + custosL[index];
+
+                    if (custosL[index] < minCost) {
+                        minCost = custosL[index];
+                        y = i; z = j;
+                    }
 
                     if (novoCusto > Z_UB) {
                         it = grafoSemUm.removeEdge(i, j);
@@ -185,6 +193,13 @@ void fixarVariaveisOutrosVertices(
                 }
                 it++;
             }
+        }
+
+        if (y != - 1 && Z_LB - e.first + minCost > Z_UB) {
+            arestasFixadasUm.insert(std::make_pair(y, std::set<int>()));
+            arestasFixadasUm[y].insert(z);
+            arestasFixadasUm.insert(std::make_pair(z, std::set<int>()));
+            arestasFixadasUm[z].insert(y);
         }
     }
 }
