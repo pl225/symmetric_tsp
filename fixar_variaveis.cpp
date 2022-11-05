@@ -121,7 +121,8 @@ void fixarVariaveisOutrosVertices(
     Graph &grafoSemUm,
     const std::vector<double> &custosL,
     std::list<int> &mst,
-    std::unordered_map<int, std::set<int>> &arestasFixadasUm
+    std::unordered_map<int, std::set<int>> &mapArestasFixadas,
+    std::list<std::pair<int, int>> &vecArestasFixadas
 ) {
     std::vector componentes(grafoSemUm.GetNumVertices(), 0);
     std::vector<std::vector<bool>> mapaArestas (grafoSemUm.GetNumVertices(), std::vector<bool>(grafoSemUm.GetNumVertices(), false));
@@ -196,10 +197,11 @@ void fixarVariaveisOutrosVertices(
         }
 
         if (y != - 1 && Z_LB - e.first + minCost > Z_UB) {
-            arestasFixadasUm.insert(std::make_pair(y, std::set<int>()));
-            arestasFixadasUm[y].insert(z);
-            arestasFixadasUm.insert(std::make_pair(z, std::set<int>()));
-            arestasFixadasUm[z].insert(y);
+            mapArestasFixadas.insert(std::make_pair(y, std::set<int>()));
+            mapArestasFixadas[y].insert(z);
+            mapArestasFixadas.insert(std::make_pair(z, std::set<int>()));
+            mapArestasFixadas[z].insert(y);
+            vecArestasFixadas.push_back(std::make_pair(y, z));
         }
     }
 }

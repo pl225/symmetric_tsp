@@ -29,7 +29,8 @@ void fixarVariaveisOutrosVertices(
     Graph &grafoSemUm,
     const std::vector<double> &custosL,
     std::list<int> &mst,
-    std::unordered_map<int, std::set<int>> &arestasFixadasUm
+    std::unordered_map<int, std::set<int>> &mapArestasFixadas,
+    std::list<std::pair<int, int>> &vecArestasFixadas
 );
 
 #endif

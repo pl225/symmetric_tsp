@@ -139,7 +139,7 @@ void melhorarUbCustoComplementar(
     indexArestaGrafo = grafo.GetEdgeIndex(0, arestaNoUm.j + 1);
     custosComplementares[indexArestaGrafo] = 0;
 
-    std::pair<std::vector<int>, double> sol = Christofides(grafo, custosComplementares);
+    std::pair<std::vector<int>, double> sol = Christofides(grafo, custosComplementares);puts("passou christofides");
     double Z_UB_Novo = 0;
     for (int l: sol.first) {
         Z_UB_Novo += custoD[l];
@@ -159,9 +159,10 @@ SL resolverSubproblemaLagrangeano(
     const std::vector<double> &custo,
     const std::vector<double> &custosLagrangeanos,
     const std::vector<double> &u,
-    ArestasNoUm *fixadasUm
+    ArestasNoUm *fixadasUm,
+    std::list<std::pair<int, int>> &vecArestasFixadas
 ) {
-    std::pair< list<int>, double > p = Prim(grafoSemUm, custosLagrangeanos);
+    std::pair< list<int>, double > p = Prim(grafoSemUm, custosLagrangeanos, vecArestasFixadas);
 
     const int zero = 0;
     std::list<int> adjUm = grafo.AdjList(zero);
@@ -202,7 +203,7 @@ SL resolverSubproblemaLagrangeano(
         v = *it;
         vSemUm = v - 1;
         cV = custo[grafo.GetEdgeIndex(zero, v)] - u[vSemUm];
-        
+
         if (cV < cI || cV < cJ) {
             atualizarArestasMenores(&i, &j, vSemUm, &cI, &cJ, cV);
         }

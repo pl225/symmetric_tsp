@@ -23,9 +23,11 @@ void relaxacaoLagrangeana (Graph &grafo, std::vector<int> custo) {
     std::vector<double> u(grafoSemUm.GetNumVertices(), 0);
     std::vector<double> custosLagrangeanos (custosSemUm);
     std::vector<double> G (grafoSemUm.GetNumVertices(), 2);
+    std::unordered_map<int, std::set<int>> arestasFixadasUm;
+    std::list<std::pair<int, int>> vecArestasFixadas;
 
     while (deveContinuar(Z_LB, Z_UB, pi, iter, gQuadrado)) {
-        SL solucao = resolverSubproblemaLagrangeano(grafoSemUm, grafo, custoD, custosLagrangeanos, u, &fixadasUm);
+        SL solucao = resolverSubproblemaLagrangeano(grafoSemUm, grafo, custoD, custosLagrangeanos, u, &fixadasUm, vecArestasFixadas);
         std::list<int> mst = solucao.first.first;
         double custoMst = solucao.first.second;
         ArestasNoUm arestasNoUm = solucao.second;
@@ -45,7 +47,7 @@ void relaxacaoLagrangeana (Graph &grafo, std::vector<int> custo) {
         if (deveMelhorarUb) {
             melhorarUbCustoComplementar(grafo, custoD, grafoSemUm, solucao, &Z_UB);
             fixarVariaveisVerticeUm(Z_LB, Z_UB, grafo, custoD, u, arestasNoUm, &fixadasUm);
-            fixarVariaveisOutrosVertices(Z_LB, Z_UB, grafo, grafoSemUm, custosLagrangeanos, mst);
+            fixarVariaveisOutrosVertices(Z_LB, Z_UB, grafo, grafoSemUm, custosLagrangeanos, mst, arestasFixadasUm, vecArestasFixadas);
         }
 
         iter++;
@@ -68,12 +70,17 @@ int main(int argc, char const *argv[]) {
     TSPLIB_parser parser(arquivo);
     Graph g = parser.GetGraph();
 
-    std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+    try {
+        std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
     
-    relaxacaoLagrangeana(g, parser.GetCosts());
-    
-    std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-    std::cout << ", " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
+        relaxacaoLagrangeana(g, parser.GetCosts());
+        
+        std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+        std::cout << ", " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
 
-    return 0;
+        return 0;
+    } catch (char const *erro) {
+        puts(erro);
+        return -1;
+    }
 }

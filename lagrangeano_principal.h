@@ -56,7 +56,8 @@ SL resolverSubproblemaLagrangeano(
     const std::vector<double> &custo,
     const std::vector<double> &custosLagrangeanos,
     const std::vector<double> &u,
-    ArestasNoUm *fixadasUm
+    ArestasNoUm *fixadasUm,
+    std::list<std::pair<int, int>> &vecArestasFixadas
 );
 
 #endif
