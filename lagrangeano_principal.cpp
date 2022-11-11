@@ -117,7 +117,7 @@ bool atualizarMelhoresValores(double Z_LB, double *Z_LB_MAX, double *pi, int *it
     return false;
 }
 
-std::vector<double> construirCustosIniciais(
+std::vector<double> construirCustosComplementares(
     const Graph &grafo, 
     const std::vector<double> & custoD, 
     const Graph &grafoSemUm, 
@@ -141,6 +141,28 @@ std::vector<double> construirCustosIniciais(
     return custosComplementares;
 }
 
+std::vector<double> construirCustosLagrangeanos(
+    const Graph &grafo,
+    const Graph &grafoSemUm,
+    const std::vector<double> &custoLagrangeano,
+    const std::vector<double> & custoD, 
+    ArestasNoUm arestaNoUm
+) {
+    std::vector<double> custosLagNovo = custoD;
+    for (int i = 0; i < grafoSemUm.GetNumVertices(); i++) {
+        for (int j: grafoSemUm.AdjList(i)) {
+            custosLagNovo[grafo.GetEdgeIndex(i + 1, j + 1)] = custoLagrangeano[grafoSemUm.GetEdgeIndex(i, j)];
+        }
+    }
+
+    int indexArestaGrafo = grafo.GetEdgeIndex(0, arestaNoUm.i + 1);
+    custosLagNovo[indexArestaGrafo] = arestaNoUm.cI;
+    indexArestaGrafo = grafo.GetEdgeIndex(0, arestaNoUm.j + 1);
+    custosLagNovo[indexArestaGrafo] = arestaNoUm.cJ;
+
+    return custosLagNovo;
+}
+
 void melhorarUbCusto(
     const Graph &grafo, 
     const std::vector<double> & custoD, 
@@ -152,7 +174,9 @@ void melhorarUbCusto(
 ) {
     std::vector<double> custos;
     if (tipoCusto == TipoCusto::COMPLEMENTAR) {
-        custos = construirCustosIniciais(grafo, custoD, grafoSemUm, solucao);
+        custos = construirCustosComplementares(grafo, custoD, grafoSemUm, solucao);
+    } else if (tipoCusto == TipoCusto::LAGRANGEANO) {
+        custos = construirCustosLagrangeanos(grafo, grafoSemUm, custoLagrangeano, custoD, solucao.second);
     }
 
     std::pair<std::vector<int>, double> sol = Christofides(grafo, custos);
