@@ -117,12 +117,11 @@ bool atualizarMelhoresValores(double Z_LB, double *Z_LB_MAX, double *pi, int *it
     return false;
 }
 
-void melhorarUbCustoComplementar(
+std::vector<double> construirCustosIniciais(
     const Graph &grafo, 
     const std::vector<double> & custoD, 
     const Graph &grafoSemUm, 
-    SL &solucao, 
-    double *Z_UB
+    SL &solucao
 ) {
     std::vector<double> custosComplementares(custoD);
     list<int> mst = solucao.first.first;
@@ -139,7 +138,24 @@ void melhorarUbCustoComplementar(
     indexArestaGrafo = grafo.GetEdgeIndex(0, arestaNoUm.j + 1);
     custosComplementares[indexArestaGrafo] = 0;
 
-    std::pair<std::vector<int>, double> sol = Christofides(grafo, custosComplementares);puts("passou christofides");
+    return custosComplementares;
+}
+
+void melhorarUbCusto(
+    const Graph &grafo, 
+    const std::vector<double> & custoD, 
+    const Graph &grafoSemUm, 
+    SL &solucao, 
+    double *Z_UB,
+    TipoCusto tipoCusto,
+    const std::vector<double> &custoLagrangeano
+) {
+    std::vector<double> custos;
+    if (tipoCusto == TipoCusto::COMPLEMENTAR) {
+        custos = construirCustosIniciais(grafo, custoD, grafoSemUm, solucao);
+    }
+
+    std::pair<std::vector<int>, double> sol = Christofides(grafo, custos);
     double Z_UB_Novo = 0;
     for (int l: sol.first) {
         Z_UB_Novo += custoD[l];

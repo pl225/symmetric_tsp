@@ -3,6 +3,7 @@
 
 #include "christofides/Christofides.h"
 #include "arestas_no_um.h"
+#include "enum_custos.hpp"
 
 #define IT_MAX_PI 100
 #define MENOR_PI 0.0005
@@ -40,12 +41,14 @@ double somaMultiplicadores(const std::vector<double> &u);
 
 bool atualizarMelhoresValores(double Z_LB, double *Z_LB_MAX, double *pi, int *iterSemMelhora);
 
-void melhorarUbCustoComplementar(
+void melhorarUbCusto(
     const Graph &grafo, 
     const std::vector<double> & custoD, 
     const Graph &grafoSemUm, 
     SL &solucao, 
-    double *Z_UB
+    double *Z_UB,
+    TipoCusto TipoCusto,
+    const std::vector<double> &custoLagrangeano
 );
 
 bool deveContinuar(double Z_LB, double Z_UB, double pi, int iter, double gQuadrado);

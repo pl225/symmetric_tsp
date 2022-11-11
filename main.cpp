@@ -4,7 +4,7 @@
 #include <iostream>
 #include <chrono>
 
-void relaxacaoLagrangeana (Graph &grafo, std::vector<int> custo) {
+void relaxacaoLagrangeana (Graph &grafo, std::vector<int> custo, TipoCusto tipoCusto) {
     std::vector<double> custoD;
     custoD.assign(custo.begin(), custo.end());
     
@@ -45,7 +45,7 @@ void relaxacaoLagrangeana (Graph &grafo, std::vector<int> custo) {
 
         bool deveMelhorarUb = atualizarMelhoresValores(Z_LB, &Z_LB_MAX, &pi, &iterSemMelhora);
         if (deveMelhorarUb) {
-            melhorarUbCustoComplementar(grafo, custoD, grafoSemUm, solucao, &Z_UB);
+            melhorarUbCusto(grafo, custoD, grafoSemUm, solucao, &Z_UB, tipoCusto, custosLagrangeanos);
             fixarVariaveisVerticeUm(Z_LB, Z_UB, grafo, custoD, u, arestasNoUm, &fixadasUm);
             fixarVariaveisOutrosVertices(Z_LB, Z_UB, grafo, grafoSemUm, custosLagrangeanos, mst, arestasFixadasUm, vecArestasFixadas);
         }
@@ -59,13 +59,16 @@ void relaxacaoLagrangeana (Graph &grafo, std::vector<int> custo) {
 }
 
 int main(int argc, char const *argv[]) {
-    if (argc < 2) {
-        std::cout << "Informe o nome do arquivo" << std::endl;
+    if (argc < 3) {
+        std::cout << "Informe o nome do arquivo e o tipo de custo" << std::endl;
+        return -1;
     }
 
     string arquivo(argv[1]);
 
     std::cout << arquivo.substr(11) << ", ";
+
+    const TipoCusto tipoCusto = static_cast<TipoCusto>(atoi(argv[2]));
     
     TSPLIB_parser parser(arquivo);
     Graph g = parser.GetGraph();
@@ -73,7 +76,7 @@ int main(int argc, char const *argv[]) {
     try {
         std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
     
-        relaxacaoLagrangeana(g, parser.GetCosts());
+        relaxacaoLagrangeana(g, parser.GetCosts(), tipoCusto);
         
         std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
         std::cout << ", " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count();
