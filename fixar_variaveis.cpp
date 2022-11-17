@@ -132,7 +132,7 @@ void fixarVariaveisOutrosVertices(
 
     while (!arestasOrdenadas.empty()) {
         ArestaCusto e = arestasOrdenadas.back();
-        int u = e.second.first, w = e.second.second;
+        const int u = e.second.first, w = e.second.second;
         arestasOrdenadas.pop_back();
         mapaArestas[w][u] = false;
         mapaArestas[u][w] = false;
@@ -171,7 +171,6 @@ void fixarVariaveisOutrosVertices(
         componentes[w] = nComponentes;
 
         double minCost = std::numeric_limits<double>::max();
-        int y = -1, z = -1;
         for (int i: componenteU) {
             list<int>::iterator it = grafoSemUm.AdjListWithoutConst(i).begin();
 
@@ -183,7 +182,6 @@ void fixarVariaveisOutrosVertices(
 
                     if (custosL[index] < minCost) {
                         minCost = custosL[index];
-                        y = i; z = j;
                     }
 
                     if (novoCusto > Z_UB) {
@@ -197,12 +195,21 @@ void fixarVariaveisOutrosVertices(
             }
         }
 
-        if (y != - 1 && Z_LB - e.first + minCost > Z_UB) {
-            mapArestasFixadas.insert(std::make_pair(y, std::set<int>()));
-            mapArestasFixadas[y].insert(z);
-            mapArestasFixadas.insert(std::make_pair(z, std::set<int>()));
-            mapArestasFixadas[z].insert(y);
-            vecArestasFixadas.push_back(std::make_pair(y, z));
+        if (Z_LB - e.first + minCost > Z_UB) {
+            bool inserir = true;
+            if (mapArestasFixadas.find(u) != mapArestasFixadas.end()) {
+                if (mapArestasFixadas[u].find(w) != mapArestasFixadas[u].end()) {
+                    inserir = false;        
+                }
+            }
+
+            if (inserir) {
+                mapArestasFixadas.insert(std::make_pair(u, std::set<int>()));
+                mapArestasFixadas[u].insert(w);
+                mapArestasFixadas.insert(std::make_pair(w, std::set<int>()));
+                mapArestasFixadas[w].insert(u);
+                vecArestasFixadas.push_back(std::make_pair(w, u));
+            }
         }
     }
 }
