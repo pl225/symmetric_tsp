@@ -188,6 +188,7 @@ void fixarVariaveisOutrosVertices(
 
                     if (novoCusto > Z_UB) {
                         it = grafoSemUm.removeEdge(i, j);
+                        grafo.removeEdge(i + 1, j + 1);
                         mapaArestas[i][j] = mapaArestas[j][i] = false;
                         continue;
                     }

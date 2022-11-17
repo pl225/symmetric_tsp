@@ -15,3 +15,6 @@ fixar_variaveis.cpp:
 
 build: main.o lagrangeano_principal.o fixar_variaveis.o
 	g++ $(FLAG) main.o lagrangeano_principal.o fixar_variaveis.o $(OBJ) -o exe
+
+clean:
+	@rm -f *.o
