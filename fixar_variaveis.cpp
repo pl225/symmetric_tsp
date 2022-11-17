@@ -4,7 +4,7 @@ void fixarVarsUmVerticeZero (
     double Z_LB, 
     double Z_UB, 
     Graph &grafo, 
-    const std::vector<double> &custosD,
+    std::vector<double> &custosD,
     const std::vector<double> &u,
     ArestasNoUm arestas
 ) {
@@ -21,8 +21,7 @@ void fixarVarsUmVerticeZero (
             double Z_LB_Aux = Z_LB_Cj + custoCandidato;
 
             if (Z_LB_Aux > Z_UB) {
-                it = grafo.removeEdge(zero, v);
-                continue;
+                grafo.changeCostEdge(zero, v, custosD);
             }
         }
 
@@ -84,7 +83,7 @@ void fixarVariaveisVerticeUm (
     double Z_LB, 
     double Z_UB, 
     Graph &grafo, 
-    const std::vector<double> &custosD,
+    std::vector<double> &custosD,
     const std::vector<double> &u,
     ArestasNoUm arestas,
     ArestasNoUm *fixadasUm
@@ -119,10 +118,11 @@ void fixarVariaveisOutrosVertices(
     double Z_UB,
     Graph &grafo,
     Graph &grafoSemUm,
-    const std::vector<double> &custosL,
+    std::vector<double> &custosL,
     std::list<int> &mst,
     std::unordered_map<int, std::set<int>> &mapArestasFixadas,
-    std::list<std::pair<int, int>> &vecArestasFixadas
+    std::list<std::pair<int, int>> &vecArestasFixadas,
+    std::vector<double> &custosD
 ) {
     std::vector componentes(grafoSemUm.GetNumVertices(), 0);
     std::vector<std::vector<bool>> mapaArestas (grafoSemUm.GetNumVertices(), std::vector<bool>(grafoSemUm.GetNumVertices(), false));
@@ -185,10 +185,9 @@ void fixarVariaveisOutrosVertices(
                     }
 
                     if (novoCusto > Z_UB) {
-                        it = grafoSemUm.removeEdge(i, j);
-                        grafo.removeEdge(i + 1, j + 1);
+                        grafoSemUm.changeCostEdge(i, j, custosL);
+                        grafo.changeCostEdge(i + 1, j + 1, custosD);
                         mapaArestas[i][j] = mapaArestas[j][i] = false;
-                        continue;
                     }
                 }
                 it++;

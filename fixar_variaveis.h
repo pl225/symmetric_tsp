@@ -16,7 +16,7 @@ void fixarVariaveisVerticeUm (
     double Z_LB, 
     double Z_UB, 
     Graph &grafo, 
-    const std::vector<double> &custosLagrangeanos, 
+    std::vector<double> &custosLagrangeanos, 
     const std::vector<double> &u,
     ArestasNoUm arestas,
     ArestasNoUm *fixadasUm
@@ -27,10 +27,11 @@ void fixarVariaveisOutrosVertices(
     double Z_UB,
     Graph &grafo,
     Graph &grafoSemUm,
-    const std::vector<double> &custosL,
+    std::vector<double> &custosL,
     std::list<int> &mst,
     std::unordered_map<int, std::set<int>> &mapArestasFixadas,
-    std::list<std::pair<int, int>> &vecArestasFixadas
+    std::list<std::pair<int, int>> &vecArestasFixadas,
+    std::vector<double> &custosD
 );
 
 #endif
