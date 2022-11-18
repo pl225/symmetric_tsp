@@ -4,6 +4,7 @@
 #include "christofides/Christofides.h"
 #include "arestas_no_um.h"
 #include "enum_custos.hpp"
+#include "kruskal.hpp"
 
 #define IT_MAX_PI 100
 #define MENOR_PI 0.0005

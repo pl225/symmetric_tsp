@@ -13,8 +13,11 @@ lagrangeano_principal.cpp:
 fixar_variaveis.cpp:
 	g++ $(FLAG) -c fixar_variaveis.cpp -o fixar_variaveis.o
 
-build: main.o lagrangeano_principal.o fixar_variaveis.o
-	g++ $(FLAG) main.o lagrangeano_principal.o fixar_variaveis.o $(OBJ) -o exe
+kruskal.cpp:
+	g++ $(FLAG) -c kruskal.cpp -o kruskal.o
+
+build: main.o lagrangeano_principal.o fixar_variaveis.o kruskal.o
+	g++ $(FLAG) main.o kruskal.o lagrangeano_principal.o fixar_variaveis.o $(OBJ) -o exe
 
 clean:
 	@rm -f *.o

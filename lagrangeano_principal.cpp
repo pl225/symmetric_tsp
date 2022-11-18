@@ -202,7 +202,13 @@ SL resolverSubproblemaLagrangeano(
     ArestasNoUm *fixadasUm,
     std::list<std::pair<int, int>> &vecArestasFixadas
 ) {
-    std::pair< list<int>, double > p = Prim(grafoSemUm, custosLagrangeanos, vecArestasFixadas);
+    std::pair< list<int>, double > p;
+    
+    if (!vecArestasFixadas.empty()) {
+        p = kruskal_mst(grafoSemUm, custosLagrangeanos, vecArestasFixadas);
+    } else {
+        p = Prim(grafoSemUm, custosLagrangeanos, vecArestasFixadas);
+    }
 
     const int zero = 0;
     std::list<int> adjUm = grafo.AdjList(zero);
