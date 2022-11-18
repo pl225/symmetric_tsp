@@ -194,7 +194,7 @@ void fixarVariaveisOutrosVertices(
             }
         }
 
-        if (Z_LB - e.first + minCost > Z_UB) {
+        /*if (Z_LB - e.first + minCost > Z_UB) {
             bool inserir = true;
             if (mapArestasFixadas.find(u) != mapArestasFixadas.end()) {
                 if (mapArestasFixadas[u].find(w) != mapArestasFixadas[u].end()) {
@@ -209,6 +209,6 @@ void fixarVariaveisOutrosVertices(
                 mapArestasFixadas[w].insert(u);
                 vecArestasFixadas.push_back(std::make_pair(w, u));
             }
-        }
+        }*/
     }
 }

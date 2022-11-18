@@ -9,8 +9,7 @@
 #include <queue>
 #include <iostream>
 #include <limits>
-
-typedef std::pair<double, std::pair<int, int>> ArestaCusto;
+#include "aresta_custo.hpp"
 
 void fixarVariaveisVerticeUm (
     double Z_LB, 
