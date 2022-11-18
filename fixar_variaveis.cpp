@@ -124,7 +124,7 @@ void fixarVariaveisOutrosVertices(
     std::list<std::pair<int, int>> &vecArestasFixadas,
     std::vector<double> &custosD
 ) {
-    std::vector componentes(grafoSemUm.GetNumVertices(), 0);
+    std::vector<int> componentes(grafoSemUm.GetNumVertices(), 0);
     std::vector<std::vector<bool>> mapaArestas (grafoSemUm.GetNumVertices(), std::vector<bool>(grafoSemUm.GetNumVertices(), false));
 
     std::vector<ArestaCusto> arestasOrdenadas = construirArvore(grafoSemUm, custosL, mst, mapaArestas);
