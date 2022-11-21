@@ -171,6 +171,7 @@ void fixarVariaveisOutrosVertices(
         componentes[w] = nComponentes;
 
         double minCost = std::numeric_limits<double>::max();
+        bool escolheuMenor = false;
         for (int i: componenteU) {
             list<int>::iterator it = grafoSemUm.AdjListWithoutConst(i).begin();
 
@@ -181,6 +182,7 @@ void fixarVariaveisOutrosVertices(
                     double novoCusto = Z_LB - e.first + custosL[index];
 
                     if (custosL[index] < minCost) {
+                        escolheuMenor = true;
                         minCost = custosL[index];
                     }
 
@@ -194,7 +196,7 @@ void fixarVariaveisOutrosVertices(
             }
         }
 
-        /*if (Z_LB - e.first + minCost > Z_UB) {
+        if (escolheuMenor && Z_LB - e.first + minCost > Z_UB) {
             bool inserir = true;
             if (mapArestasFixadas.find(u) != mapArestasFixadas.end()) {
                 if (mapArestasFixadas[u].find(w) != mapArestasFixadas[u].end()) {
@@ -209,6 +211,6 @@ void fixarVariaveisOutrosVertices(
                 mapArestasFixadas[w].insert(u);
                 vecArestasFixadas.push_back(std::make_pair(w, u));
             }
-        }*/
+        }
     }
 }
