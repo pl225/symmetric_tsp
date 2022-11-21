@@ -64,7 +64,7 @@ void fixarVarsUmVerticeUm (
             it++;
         }
 
-        if (fixadasUm->j == -1) {
+        if (fixadasUm->j == -1 && arestas.j != fixadasUm->i) {
             if (Z_LB - arestas.cJ + minCost > Z_UB) {
                 fixadasUm->j = arestas.j;
             }
