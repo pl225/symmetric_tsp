@@ -64,7 +64,7 @@ void fixarVarsUmVerticeUm (
             it++;
         }
 
-        if (fixadasUm->j == -1) {
+        if (fixadasUm->j == -1 && arestas.j != fixadasUm->i) {
             if (Z_LB - arestas.cJ + minCost > Z_UB) {
                 fixadasUm->j = arestas.j;
             }
@@ -124,7 +124,7 @@ void fixarVariaveisOutrosVertices(
     std::list<std::pair<int, int>> &vecArestasFixadas,
     std::vector<double> &custosD
 ) {
-    std::vector componentes(grafoSemUm.GetNumVertices(), 0);
+    std::vector<int> componentes(grafoSemUm.GetNumVertices(), 0);
     std::vector<std::vector<bool>> mapaArestas (grafoSemUm.GetNumVertices(), std::vector<bool>(grafoSemUm.GetNumVertices(), false));
 
     std::vector<ArestaCusto> arestasOrdenadas = construirArvore(grafoSemUm, custosL, mst, mapaArestas);
@@ -171,6 +171,7 @@ void fixarVariaveisOutrosVertices(
         componentes[w] = nComponentes;
 
         double minCost = std::numeric_limits<double>::max();
+        bool escolheuMenor = false;
         for (int i: componenteU) {
             list<int>::iterator it = grafoSemUm.AdjListWithoutConst(i).begin();
 
@@ -181,6 +182,7 @@ void fixarVariaveisOutrosVertices(
                     double novoCusto = Z_LB - e.first + custosL[index];
 
                     if (custosL[index] < minCost) {
+                        escolheuMenor = true;
                         minCost = custosL[index];
                     }
 
@@ -194,7 +196,7 @@ void fixarVariaveisOutrosVertices(
             }
         }
 
-        /*if (Z_LB - e.first + minCost > Z_UB) {
+        if (escolheuMenor && Z_LB - e.first + minCost > Z_UB) {
             bool inserir = true;
             if (mapArestasFixadas.find(u) != mapArestasFixadas.end()) {
                 if (mapArestasFixadas[u].find(w) != mapArestasFixadas[u].end()) {
@@ -209,6 +211,6 @@ void fixarVariaveisOutrosVertices(
                 mapArestasFixadas[w].insert(u);
                 vecArestasFixadas.push_back(std::make_pair(w, u));
             }
-        }*/
+        }
     }
 }
