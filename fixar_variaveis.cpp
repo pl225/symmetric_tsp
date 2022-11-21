@@ -139,7 +139,7 @@ void fixarVariaveisOutrosVertices(
         std::queue<int> fila;
         std::vector<bool> visitados (grafoSemUm.GetNumVertices(), false);
         std::vector<int> componenteU, componenteW;
-        
+
         fila.push(u);
         visitados[u] = true;
         componenteU.push_back(u);
@@ -163,7 +163,7 @@ void fixarVariaveisOutrosVertices(
 
         nComponentes++;
         for (int i = 0; i < grafoSemUm.GetNumVertices(); i++) {
-            if (i != w && componentes[i] == componentes[w]) {
+            if (i != w && componentes[i] == componentes[w] && mapaArestas[i][w]) {
                 componenteW.push_back(i);
                 componentes[i] = nComponentes;
             }
