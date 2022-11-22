@@ -79,7 +79,7 @@ pair< list<int>, double > kruskal_mst(const Graph &G, const std::vector<double> 
         s.unite(x, y);
 
         obj += w;
-        cout << x << " -- " << y << " == " << w << endl;
+        //cout << x << " -- " << y << " == " << w << endl;
     }
 
     for (int i = 0; i < G.GetNumVertices(); i++) {
@@ -92,9 +92,9 @@ pair< list<int>, double > kruskal_mst(const Graph &G, const std::vector<double> 
     // 1. Sort all edges
     sort(edgelist.begin(), edgelist.end());
 
-    cout << "Following are the edges in the "
+    /*cout << "Following are the edges in the "
             "constructed MST"
-         << endl;
+         << endl;*/
     for (auto &edge : edgelist)
     {
         double w = edge.first;
@@ -108,12 +108,12 @@ pair< list<int>, double > kruskal_mst(const Graph &G, const std::vector<double> 
             s.unite(x, y);
             edges.push_back(G.GetEdgeIndex(x, y));
             obj += w;
-            cout << x << " -- " << y << " == " << w
-                 << endl;
+            /*cout << x << " -- " << y << " == " << w
+                 << endl;*/
         }
     }
 
-    cout << "Minimum Cost Spanning Tree Kruskal: " << obj << ' ' << edges.size() << endl;
+    //cout << "Minimum Cost Spanning Tree Kruskal: " << obj << ' ' << edges.size() << endl;
 
     return pair< list<int>, double >(edges, obj);
 }
