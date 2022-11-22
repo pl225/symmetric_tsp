@@ -52,7 +52,7 @@ void fixarVarsUmVerticeUm (
             int v = *it;
             int vSemUm = v - 1;
 
-            if (vSemUm != arestas.i && vSemUm != arestas.j) {
+            if (vSemUm != arestas.i && vSemUm != arestas.j && !grafo.isRemovedEdge(zero, v)) {
                 double custoCandidato = custosD[grafo.GetEdgeIndex(zero, v)] - u[vSemUm];
 
                 if (custoCandidato < minCost) {
@@ -64,15 +64,17 @@ void fixarVarsUmVerticeUm (
             it++;
         }
 
-        if (fixadasUm->j == -1 && arestas.j != fixadasUm->i) {
-            if (Z_LB - arestas.cJ + minCost > Z_UB) {
-                fixadasUm->j = arestas.j;
+        if (minV != -1) {
+            if (fixadasUm->j == -1 && arestas.j != fixadasUm->i) {
+                if (Z_LB - arestas.cJ + minCost > Z_UB) {
+                    fixadasUm->j = arestas.j;
+                }
             }
-        }
 
-        if (fixadasUm->i == -1) {
-            if (Z_LB - arestas.cI + minCost > Z_UB) {
-                fixadasUm->i = arestas.i;
+            if (fixadasUm->i == -1 && arestas.i != fixadasUm->j) {
+                if (Z_LB - arestas.cI + minCost > Z_UB) {
+                    fixadasUm->i = arestas.i;
+                }
             }
         }
         
@@ -187,7 +189,9 @@ void fixarVariaveisOutrosVertices(
 
             while (it != grafoSemUm.AdjListWithoutConst(i).end()) {
                 int j = *it;
-                if ((i != e.second.first || j != e.second.second) && componentes[j] == componentes[w]) {
+                if (!grafoSemUm.isRemovedEdge(i, j) 
+                    && (i != e.second.first || j != e.second.second) && componentes[j] == componentes[w]
+                ) {                    
                     int index = grafoSemUm.GetEdgeIndex(i, j);
                     double novoCusto = Z_LB - e.first + custosL[index];
 
