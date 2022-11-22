@@ -161,11 +161,21 @@ void fixarVariaveisOutrosVertices(
         }
         componentes[u] = nComponentes;
 
+        fila.push(w);
+        visitados[w] = true;
         nComponentes++;
-        for (int i = 0; i < grafoSemUm.GetNumVertices(); i++) {
-            if (i != w && componentes[i] == componentes[w] && mapaArestas[i][w]) {
-                componenteW.push_back(i);
-                componentes[i] = nComponentes;
+
+        while (!fila.empty()) {
+            int v = fila.back();
+            fila.pop();
+
+            for (int a: grafoSemUm.AdjList(v)) {
+                if (!visitados[a] && mapaArestas[v][a]) {
+                    fila.push(a);
+                    visitados[a] = true;
+                    componentes[a] = nComponentes;
+                    componenteW.push_back(a);
+                }
             }
         }
         componentes[w] = nComponentes;
